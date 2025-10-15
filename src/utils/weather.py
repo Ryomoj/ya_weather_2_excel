@@ -4,7 +4,7 @@ weather_access_key = "1f1e1cfa-2644-48ff-902d-2f71aa0d9477"
 geocoder_api_key = "pk.3eefeb00697e051f63652e977e277866"
 
 
-def get_coordinates_by_city_name(city_name: str) -> dict:
+def get_coordinates_by_city_name(city_name: str) -> dict | None:
     url = f"https://us1.locationiq.com/v1/search.php"
 
     params = {
@@ -14,17 +14,20 @@ def get_coordinates_by_city_name(city_name: str) -> dict:
         'limit': 1
     }
 
-    response = requests.get(url, params=params)
-    response_data = response.json()
+    try:
+        response = requests.get(url, params=params)
+        response_data = response.json()
 
-    lat = response_data[0]["lat"]
-    lon = response_data[0]["lon"]
+        lat = response_data[0]["lat"]
+        lon = response_data[0]["lon"]
+    except Exception:
+        return None
 
     return {"lat": lat, "lon": lon}
 
 
 
-def get_weather_forecast_by_lat_lon(lat: float, lon: float, days: int = 7) -> dict:
+def get_weather_forecast_by_lat_lon(lat: float, lon: float, days: int = 7) -> dict | None:
     url = "https://api.weather.yandex.ru/v2/forecast"
 
     headers = {
@@ -39,8 +42,11 @@ def get_weather_forecast_by_lat_lon(lat: float, lon: float, days: int = 7) -> di
         "lang": "ru_RU"
     }
 
-    response = requests.get(url, headers=headers, params=params)
-    response_data = response.json()
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response_data = response.json()
+    except Exception:
+        return None
 
     return response_data
 
